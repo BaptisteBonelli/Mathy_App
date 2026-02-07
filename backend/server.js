@@ -4,7 +4,7 @@ const sqlite3 = require("sqlite3").verbose();
 const jwt = require("jsonwebtoken");
 
 const app = express();
-const PORT = 3001;
+const PORT = process.env.PORT || 3001;
 const JWT_SECRET = "SECRET_KEY";
 const bcrypt = require("bcrypt");
 
@@ -27,7 +27,7 @@ function authenticateToken(req, res, next) {
 
 
 app.use(cors({
-  origin: "http://localhost:3000",
+  origin: "*",
   credentials: true
 }));
 app.use(express.json());
@@ -343,10 +343,7 @@ app.get("/verify-token", authJWT, (req, res) => {
   res.json({ valid: true, user: req.user.identifiant });
 });
 
-app.listen(PORT, () => {
-  console.log("✅ Serveur JWT lancé sur http://localhost:" + PORT);
+app.listen(PORT, '0.0.0.0', () => {
+  console.log(`Serveur démarré sur le port ${PORT}`);
 });
 
-app.listen(PORT, () => {
-  console.log("✅ Serveur JWT lancé sur http://localhost:" + PORT);
-});

@@ -102,7 +102,7 @@ function Home({ user }) {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch("http://localhost:3001/recommend-exercise", {
+      const res = await fetch("${process.env.REACT_APP_API_URL})/recommend-exercise", {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -110,9 +110,16 @@ function Home({ user }) {
 
       const data = await res.json();
       if (data.automatisme) {
-        const resExos = await fetch(`http://localhost:3001/exercices/${encodeURIComponent(data.automatisme)}`, {
-          headers: { Authorization: `Bearer ${token}` },
-        });
+        // 1. On définit l'URL de base (à mettre en haut de ton fichier ou de ta fonction)
+const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
+
+// 2. On met à jour le fetch
+const resExos = await fetch(
+  `${apiUrl}/exercices/${encodeURIComponent(data.automatisme)}`, 
+  {
+    headers: { Authorization: `Bearer ${token}` },
+  }
+);
         if (resExos.status === 401) return logout();
         
         const exos = await resExos.json();
@@ -135,7 +142,7 @@ function Home({ user }) {
     const isCorrect = !isNaN(userVal) && expected !== null && Math.abs(userVal - expected) < 0.01;
 
     try {
-      const res = await fetch("http://localhost:3001/save-result", {
+      const res = await fetch("${process.env.REACT_APP_API_URL}/save-result", {
         method: "POST",
         headers: {
           "Content-Type": "application/json",

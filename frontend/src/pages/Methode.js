@@ -37,6 +37,7 @@ function Methode() {
   const [searchParams] = useSearchParams();
   const autoFromUrl = searchParams.get("automatisme");
   const navigate = useNavigate();
+  const token = localStorage.getItem("token");
 
   useEffect(() => {
     if (!autoFromUrl) return;
@@ -87,15 +88,14 @@ const handleMethodeChange = async (methode) => {
     if (!methode) return;
 
     try {
-        const res = await fetch(
-            `http://localhost:3001/methode/${encodeURIComponent(methode)}`,
-            {
-                headers: {
-                    Authorization: "Bearer " + localStorage.getItem("token")
-                }
-            }
-        );
+        const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
+const res = await fetch(
+  `${apiUrl}/methode/${encodeURIComponent(methode)}`,
+  {
+    headers: { Authorization: `Bearer ${token}` }
+  }
+);
         if (res.status === 401 || res.status === 403) {
             localStorage.clear();
             navigate("/login");

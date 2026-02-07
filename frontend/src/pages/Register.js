@@ -41,7 +41,7 @@ const handleSubmit = async (e) => {
     localStorage.clear();
 
     try {
-        const res = await fetch("http://localhost:3001/register", {
+        const res = await fetch("${process.env.REACT_APP_API_URL}/register", {
             method: "POST",
             headers: { "Content-Type": "application/json" },
             body: JSON.stringify({ user, password }),

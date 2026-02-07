@@ -36,7 +36,7 @@ function Stats({ user }) {
 
     const token = localStorage.getItem("token");
 
-    fetch("http://localhost:3001/stats", {
+    fetch("${process.env.REACT_APP_API_URL}/stats", {
       headers: {
         Authorization: `Bearer ${token}`,
       },

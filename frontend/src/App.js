@@ -15,7 +15,7 @@ function App() {
   // Vérification automatique au démarrage
   useEffect(() => {
     if (token) {
-      fetch("http://localhost:3001/verify-token", {
+      fetch("${process.env.REACT_APP_API_URL}/verify-token", {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => {

@@ -1,4 +1,8 @@
 <!DOCTYPE html>
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="default">
+<meta name="apple-mobile-web-app-title" content="MathAuto">
+<link rel="apple-touch-icon" href="logo192.png">
 <html lang="en">
   <head>
     <meta charset="utf-8" />
@@ -39,6 +43,15 @@
 
       To begin the development, run `npm start` or `yarn start`.
       To create a production bundle, use `npm run build` or `yarn build`.
+	  <script>
+  if ('serviceWorker' in navigator) {
+    window.addEventListener('load', () => {
+      navigator.serviceWorker.register('./serviceWorker.js')
+        .then(reg => console.log('SW enregistré !', reg))
+        .catch(err => console.log('Erreur SW', err));
+    });
+  }
+</script>
     -->
   </body>
 </html>

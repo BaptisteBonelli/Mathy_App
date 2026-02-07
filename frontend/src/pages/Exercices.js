@@ -160,7 +160,7 @@ const autoFromUrl = searchParams.get("automatisme");
   };
 
   useEffect(() => {
-    fetch("http://localhost:3001/automatismes", {
+    fetch("${process.env.REACT_APP_API_URL}/automatismes", {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -220,11 +220,16 @@ useEffect(() => {
 
   if (!auto) return;
 
-  try {
-    const res = await fetch(
-      `http://localhost:3001/exercices/${encodeURIComponent(auto)}`,
-      { headers: { Authorization: `Bearer ${token}` } }
-    );
+// 1. Définition de l'URL de base (à placer idéalement en haut du fichier ou de la fonction)
+const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
+
+// 2. Le fetch modifié
+try {
+  const res = await fetch(
+    `${apiUrl}/exercices/${encodeURIComponent(auto)}`,
+    { headers: { Authorization: `Bearer ${token}` } }
+  );
+  // ... reste du code
     if (!res.ok) throw new Error("Erreur récupération exercices");
     const data = await res.json();
     setExercicesBDD(data);
@@ -287,7 +292,7 @@ useEffect(() => {
     }
 
     // Envoi au backend
-    await fetch("http://localhost:3001/save-result", {
+    await fetch("${process.env.REACT_APP_API_URL}/save-result", {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
