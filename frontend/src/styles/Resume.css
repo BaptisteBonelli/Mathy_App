@@ -1,0 +1,110 @@
+.resume-container {
+  max-width: 800px;
+  margin: 2rem auto;
+  padding: 1.5rem;
+  background: white;
+  border-radius: 10px;
+  box-shadow: 0px 4px 10px rgba(0,0,0,0.1);
+  text-align: left;
+}
+
+.resume-container h2 {
+  color: #1976d2;
+  margin-bottom: 1rem;
+}
+
+.resume-section {
+  margin-bottom: 1.5rem;
+}
+
+.resume-section h3 {
+  color: #333;
+  margin-bottom: 0.5rem;
+}
+
+.resume-section p {
+  line-height: 1.6;
+}
+
+/* --- ONGLET EXERCICES --- */
+
+/* --- ONGLET METHODES --- */
+
+.methodes-tabs {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+/* Boutons Méthode */
+.methodes-tabs button {
+  background: var(--white);
+  border: 2px solid var(--purple-light);
+  color: var(--purple-dark);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  box-shadow: 2px 2px 0 var(--yellow-accent);
+}
+
+/* Hover */
+.methodes-tabs button:hover {
+  background: var(--yellow-light);
+  transform: translateY(-2px);
+  border-color: var(--yellow-accent);
+}
+
+/* Actif */
+.methodes-tabs button.active {
+  background: var(--purple-main);
+  color: white;
+  border-color: var(--purple-main);
+  box-shadow: 3px 3px 0 var(--yellow-accent);
+}
+
+.methode-contenu {
+  background: white;
+  padding: 1.5rem 1.8rem;
+  border-radius: 14px;
+
+  /* Cohérent avec ton design */
+  box-shadow: 3px 3px 0 var(--yellow-accent);
+
+  margin-top: 1.5rem;
+  border: 2px solid var(--purple-light);
+}
+
+.methode-select {
+  max-width: 800px;          /* comme la carte méthode */
+  margin: 1.5rem auto;
+  padding: 1.2rem 1.5rem;
+
+  background: white;
+  border-radius: 14px;
+  border: 2px solid var(--purple-light);
+  box-shadow: 3px 3px 0 var(--yellow-accent);
+
+  text-align: left;
+}
+
+.methode-select select {
+  width: 100%;               /* 🔑 s’adapte à l’écran */
+  max-width: 100%;
+  padding: 0.6rem 0.8rem;
+
+  font-size: 1rem;
+  font-weight: 600;
+
+  border-radius: 8px;
+  border: 2px solid var(--purple-light);
+  background: var(--white);
+  color: var(--purple-dark);
+
+  cursor: pointer;
+}

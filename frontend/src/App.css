@@ -1,0 +1,60 @@
+/* src/App.css - styles globaux et layout */
+:root{
+  --primary: #1976d2;
+  --primary-dark: #145a9e;
+  --bg: transparent;
+  --card-bg: #ffffff;
+}
+
+* { box-sizing: border-box; }
+
+html, body, #root {
+  height: 100%;
+  margin: 0;
+  font-family: Inter, Arial, sans-serif;
+  background: var(--bg);
+  color: #222;
+}
+
+/* Ajoute ça pour que le contenu ne soit pas caché sous la barre */
+body {
+  /* On décale le contenu de la largeur de la barre repliée + un peu d'espace */
+  padding-left: calc(70px + 1rem); 
+}
+
+/* Optionnel : Si tu veux que le contenu soit centré par rapport à l'espace restant */
+.container, .tests-page {
+  margin: 0 auto; 
+}
+
+.App {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+/* zone principale (sous la navbar) */
+.app-main {
+  flex: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start;
+  padding: 1rem;
+}
+
+/* container qui encadre le contenu pour limiter la largeur sur grand écran */
+.container {
+  width: 100%;
+  max-width: 1000px;
+  padding: 0 1rem;
+}
+
+/* Graphique (Stats.js) */
+.recharts-legend-item text {
+  font-size: 0.9rem;
+}
+
+.container h2 {
+  font-size: 1.5rem;
+  margin-bottom: 1rem;
+}

@@ -1,0 +1,112 @@
+/* --- PAGE STATS --- */
+
+.stats-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem;
+  color: var(--purple-dark);
+}
+
+/* Carte principale */
+.stats-card {
+  background: white;
+  border: 4px solid var(--purple-main);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 8px 8px 0px var(--yellow-accent);
+  margin-bottom: 2rem;
+}
+
+/* Titre */
+.stats-title {
+  display: inline-block;
+  padding: 0.6rem 1.5rem;
+  margin-bottom: 2rem;
+  background-color: var(--purple-light);
+  border: 3px solid var(--purple-main);
+  border-radius: 20px;
+  font-size: 2rem;
+  letter-spacing: 1px;
+  text-shadow: 2px 2px 0px var(--yellow-accent);
+}
+
+/* Sous-cartes graphiques */
+.graph-card {
+  background: var(--purple-light);
+  border-radius: 15px;
+  padding: 1.5rem;
+  margin-bottom: 2rem;
+}
+
+.graph-card h3 {
+  margin-top: 0;
+  color: var(--purple-dark);
+}
+
+/* Tableau stats */
+.score-table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-top: 1rem;
+  background: white;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.score-table th {
+  background-color: var(--purple-main);
+  color: white;
+  padding: 0.8rem;
+  font-size: 0.9rem;
+}
+
+.score-table td {
+  padding: 0.8rem;
+  border-bottom: 1px solid var(--purple-light);
+}
+
+/* Bloc stats globales */
+.global-stats {
+  margin-top: 2rem;
+  background: rgba(255,255,255,0.7);
+  border-radius: 15px;
+  padding: 1rem;
+}
+
+/* Boutons */
+.stats-actions {
+  margin-top: 2rem;
+  display: flex;
+  gap: 1rem;
+  justify-content: center;
+  flex-wrap: wrap;
+}
+
+.stats-actions button {
+  border: none;
+  padding: 0.6rem 1.4rem;
+  border-radius: 20px;
+  font-weight: bold;
+  cursor: pointer;
+}
+
+.btn-pdf {
+  background: var(--purple-main);
+  color: white;
+}
+
+.btn-reset {
+  background: #ff6b6b;
+  color: white;
+}
+
+.btn-pdf:hover {
+  background: var(--purple-dark);
+}
+
+.btn-reset:hover {
+  background: #e04848;
+}

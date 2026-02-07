@@ -1,0 +1,325 @@
+/* src/styles/Exercices.css */
+
+:root {
+  /* Palette identique à Tests.css */
+  --yellow-bg: rgb(255, 255, 255);
+  --yellow-light: rgb(255, 255, 255);
+  --yellow-accent: rgb(237, 179, 234);
+
+  --purple-dark: rgb(114, 0, 177);
+  --purple-main: rgb(161, 0, 255);
+  --purple-soft: rgb(200, 109, 255);
+  --purple-light: rgb(237, 211, 255);
+  
+  --white: #ffffff;
+}
+
+body {
+    /* Le même fond dégradé */
+    background: linear-gradient(135deg, #fdf7c8, #d4a6f0);
+    min-height: 100vh;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background-attachment: fixed;
+    /* Marge gauche pour la Sidebar */
+    padding-left: calc(70px + 1rem); 
+}
+
+.exercices-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  padding: 2rem 1rem;
+  color: var(--purple-dark);
+}
+
+/* --- CARTE PRINCIPALE --- */
+.main-card-container {
+  background: var(--white);
+  border: 4px solid var(--purple-main);
+  border-radius: 20px;
+  padding: 2rem;
+  width: 100%;
+  max-width: 900px;
+  box-shadow: 8px 8px 0px var(--yellow-accent);
+  text-align: center;
+  margin-bottom: 3rem;
+}
+
+.main-title {
+  font-size: 2rem;
+  text-transform: uppercase;
+  letter-spacing: 2px;
+  margin-top: 0;
+  margin-bottom: 2rem;
+  color: var(--purple-dark);
+  text-shadow: 2px 2px 0px var(--yellow-light);
+}
+
+/* Section Blocks */
+.section-block {
+    margin-bottom: 1.5rem;
+    text-align: left;
+}
+
+.section-label {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    color: #888;
+    font-weight: 700;
+    display: block;
+    margin-bottom: 0.5rem;
+}
+
+/* --- GRID CATEGORIES --- */
+.categorie-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+    gap: 0.8rem;
+}
+
+.categorie-card {
+    background: var(--white);
+    border: 2px solid var(--purple-light);
+    color: var(--purple-dark);
+    padding: 0.8rem;
+    border-radius: 10px;
+    cursor: pointer;
+    font-weight: 600;
+    transition: all 0.2s ease;
+    font-size: 0.9rem;
+}
+
+.categorie-card:hover {
+    background: var(--yellow-light);
+    border-color: var(--yellow-accent);
+    transform: translateY(-2px);
+}
+
+.categorie-card.active {
+    background: var(--purple-main);
+    color: white;
+    border-color: var(--purple-main);
+    box-shadow: 3px 3px 0 var(--yellow-accent);
+}
+
+/* --- SELECTEUR TYPE --- */
+.select-wrapper select {
+  width: 100%;
+  padding: 0.8rem;
+  border: 2px solid var(--purple-light);
+  border-radius: 10px;
+  background-color: var(--yellow-bg);
+  font-size: 1rem;
+  color: var(--purple-dark);
+  cursor: pointer;
+  outline: none;
+  font-weight: 600;
+}
+.select-wrapper select:focus {
+  border-color: var(--purple-main);
+}
+
+/* --- ZONE EXERCICE --- */
+.exercise-area {
+    border-top: 2px dashed var(--purple-light);
+    padding-top: 1.5rem;
+    margin-top: 1rem;
+}
+
+.statement-box {
+  background-color: var(--purple-light);
+  color: var(--purple-dark);
+  padding: 1rem;
+  border-radius: 10px;
+  font-size: 1.2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+
+/* INPUT & BOUTON */
+.input-group {
+  display: flex;
+  gap: 10px;
+}
+
+.input-group input {
+  flex: 1;
+  padding: 0.8rem;
+  border: 2px solid var(--purple-main);
+  border-radius: 10px;
+  font-size: 1.1rem;
+  text-align: center;
+  outline: none;
+}
+
+.input-group input:focus {
+  box-shadow: 0 0 0 3px var(--yellow-light);
+}
+
+.validate-btn {
+  background-color: var(--purple-main);
+  color: white;
+  border: none;
+  border-radius: 10px;
+  width: 50px;
+  font-size: 1.5rem;
+  font-weight: bold;
+  cursor: pointer;
+  transition: transform 0.1s;
+}
+.validate-btn:active { transform: scale(0.95); }
+.validate-btn:hover { background-color: var(--purple-dark); }
+
+/* FEEDBACK */
+.feedback-message {
+  margin-top: 1rem;
+  padding: 0.8rem;
+  border-radius: 8px;
+  font-weight: bold;
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  align-items: center;
+}
+.feedback-message.success {
+  background-color: #e6fffa;
+  color: #008060;
+  border: 1px solid #b2f5ea;
+}
+.feedback-message.error {
+  background-color: #fff5f5;
+  color: #c53030;
+  border: 1px solid #feb2b2;
+}
+
+.next-btn {
+    background: var(--yellow-accent);
+    border: none;
+    padding: 0.5rem 1.5rem;
+    border-radius: 20px;
+    font-weight: bold;
+    color: var(--purple-dark);
+    cursor: pointer;
+    box-shadow: 2px 2px 0 rgba(0,0,0,0.1);
+}
+
+/* ANIMATION D'APPARITION */
+.fade-in {
+    animation: fadeIn 0.4s ease-in;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* HELP */
+.help-link-section {
+  margin-top: 2rem;
+}
+.help-btn {
+  background: none;
+  border: none;
+  color: var(--purple-soft);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 0.9rem;
+}
+.help-text {
+    font-size: 0.85rem;
+    color: #666;
+    margin-top: 0.5rem;
+    font-style: italic;
+}
+
+/* ----------------- */
+/* BOUTON LOGOUT (copie style catégorie) */
+/* ----------------- */
+
+/* ----------------- */
+/* FOOTER LOGOUT (icône cliquable, texte aligné comme les autres) */
+/* ----------------- */
+.nav-footer {
+  display: flex;
+  align-items: center;
+  padding: 1rem;
+  justify-content: flex-start;
+  margin-top: auto; /* pousse le footer en bas */
+}
+
+.nav-footer .logout-icon {
+  cursor: pointer;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 1.4rem;
+  transition: transform 0.1s ease, color 0.2s ease;
+}
+
+.nav-footer .logout-icon:hover {
+  color: var(--purple-main);
+  transform: translateY(-2px);
+}
+
+.nav-footer .logout-text {
+  margin-left: 0.5rem;
+  font-size: 0.9rem;
+  color: var(--purple-dark);
+  user-select: none;
+  white-space: nowrap; /* ne pas casser le texte */
+  overflow: hidden;    /* masque derrière la sidebar si besoin */
+  text-overflow: ellipsis;
+  pointer-events: none; /* le texte n’est pas cliquable */
+}
+
+/* --- ONGLET EXERCICES --- */
+
+.methodes-tabs {
+  display: flex;
+  gap: 0.6rem;
+  margin-top: 1.2rem;
+  margin-bottom: 1.2rem;
+  flex-wrap: wrap;
+  justify-content: center;
+}
+
+.exercice-tab {
+  background: var(--white);
+  border: 2px solid var(--purple-light);
+  color: var(--purple-dark);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  box-shadow: 2px 2px 0 var(--yellow-accent);
+}
+
+.exercice-tab:hover {
+  background: var(--yellow-light);
+  transform: translateY(-2px);
+  border-color: var(--yellow-accent);
+}
+
+.exercice-tab.active {
+  background: var(--purple-main);
+  color: white;
+  border-color: var(--purple-main);
+  box-shadow: 3px 3px 0 var(--yellow-accent);
+}
+
+.method-link-btn{
+  background: var(--white);
+  border: 2px solid var(--purple-light);
+  color: var(--purple-dark);
+  padding: 0.6rem 1rem;
+  border-radius: 12px;
+  cursor: pointer;
+  font-weight: 700;
+  font-size: 0.85rem;
+  transition: all 0.2s ease;
+  box-shadow: 2px 2px 0 var(--yellow-accent);
+}
+

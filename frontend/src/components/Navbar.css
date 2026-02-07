@@ -1,0 +1,150 @@
+/* src/components/Navbar.css */
+
+:root {
+  --sidebar-collapsed-width: 70px;
+  --sidebar-expanded-width: 240px;
+  --yellow-accent: rgb(255, 239, 0);
+  --yellow-light: rgb(255, 244, 170);
+  --purple-main: rgb(161, 0, 255);
+  --purple-dark: rgb(114, 0, 177);
+  --purple-soft: rgb(200, 109, 255); /* Ajout pour la scrollbar */
+  --white: #ffffff;
+}
+
+/* Le conteneur principal */
+.sidebar {
+  position: fixed;
+  top: 0;
+  left: 0;
+  height: 100vh;
+  width: var(--sidebar-collapsed-width);
+  background: var(--white);
+  border-right: 3px solid var(--purple-main);
+  box-shadow: 4px 0 0 var(--yellow-accent);
+  z-index: 1000;
+  transition: width 0.4s cubic-bezier(0.25, 0.8, 0.25, 1);
+  overflow: hidden; 
+}
+
+/* Expansion au survol */
+.sidebar:hover {
+  width: var(--sidebar-expanded-width);
+}
+
+.sidebar-inner {
+  display: flex;
+  flex-direction: column; /* Organisation verticale */
+  height: 100%; /* Prend toute la hauteur de l'écran */
+  padding: 1rem 0;
+  box-sizing: border-box;
+}
+
+/* --- HAUT : LOGO (Ne scroll pas) --- */
+.brand {
+  display: flex;
+  align-items: center;
+  padding: 0 1.2rem;
+  margin-bottom: 1rem;
+  min-height: 50px; /* Hauteur fixe pour ne pas être écrasé */
+  color: var(--purple-dark);
+  font-weight: 800;
+  font-size: 1.2rem;
+  white-space: nowrap;
+  flex-shrink: 0; /* Interdiction de rétrécir */
+}
+
+.brand-icon {
+  font-size: 1.8rem;
+  min-width: 30px;
+  margin-right: 1rem;
+}
+
+/* --- MILIEU : LIENS (SCROLLABLE) --- */
+.nav-links {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0 0.5rem;
+  
+  /* C'est la magie ici : */
+  flex-grow: 1; /* Prend tout l'espace disponible entre le logo et le footer */
+  overflow-y: auto; /* Active le scroll vertical si besoin */
+  overflow-x: hidden; /* Cache le scroll horizontal */
+  
+  /* Pour lisser le scroll */
+  scroll-behavior: smooth;
+}
+
+/* Personnalisation de la Scrollbar (Chrome, Safari, Edge) */
+.nav-links::-webkit-scrollbar {
+  width: 6px; /* Barre très fine */
+}
+
+.nav-links::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+/* La barre est invisible par défaut et devient violette au survol */
+.nav-links::-webkit-scrollbar-thumb {
+  background-color: transparent; 
+  border-radius: 10px;
+}
+
+/* On affiche la scrollbar seulement quand on survole la sidebar */
+.sidebar:hover .nav-links::-webkit-scrollbar-thumb {
+  background-color: var(--purple-soft);
+}
+
+/* --- BAS : FOOTER (Ne scroll pas) --- */
+.nav-footer {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 1rem 0.5rem 0 0.5rem; /* Padding top pour séparer visuellement */
+  border-top: 2px dashed var(--purple-main);
+  flex-shrink: 0; /* Interdiction de rétrécir */
+  background: var(--white); /* Fond blanc pour couvrir les items qui scrollent derrière si besoin */
+}
+
+/* --- STYLES DES LIENS (Communs haut et bas) --- */
+.sidebar a {
+  display: flex;
+  align-items: center;
+  text-decoration: none;
+  color: var(--purple-dark);
+  padding: 0.8rem;
+  border-radius: 12px;
+  transition: all 0.2s ease;
+  white-space: nowrap;
+  overflow: hidden;
+  flex-shrink: 0; /* Important pour que les boutons gardent leur taille dans le scroll */
+}
+
+.sidebar a .icon {
+  font-size: 1.4rem;
+  min-width: 30px;
+  text-align: center;
+  margin-right: 1rem;
+}
+
+.sidebar a .text {
+  font-weight: 600;
+  opacity: 0;
+  transition: opacity 0.2s ease 0.1s;
+}
+
+.sidebar:hover a .text {
+  opacity: 1;
+}
+
+/* États Hover / Active */
+.sidebar a:hover {
+  background-color: var(--yellow-light);
+  transform: translateX(4px);
+}
+
+.sidebar a.active {
+  background-color: var(--purple-main);
+  color: white;
+  box-shadow: 3px 3px 0 var(--yellow-accent);
+}
