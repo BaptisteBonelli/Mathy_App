@@ -160,7 +160,7 @@ const autoFromUrl = searchParams.get("automatisme");
   };
 
   useEffect(() => {
-    fetch("${process.env.REACT_APP_API_URL}/automatismes", {
+    fetch('${process.env.REACT_APP_API_URL}/automatismes', {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
@@ -292,7 +292,7 @@ try {
     }
 
     // Envoi au backend
-    await fetch("${process.env.REACT_APP_API_URL}/save-result", {
+    await fetch('${process.env.REACT_APP_API_URL}/save-result', {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
