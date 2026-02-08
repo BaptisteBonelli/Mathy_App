@@ -9,11 +9,7 @@ import Stats from "./pages/Stats";
 import Home from "./pages/Home";
 import Feedback from "./pages/Feedback";
 
-
-<Route 
-  path="/retours" 
-  element={user ? <Feedback /> : <Navigate to="/login" />} 
-/>
+// --- SUPPRESSION DU BLOC QUI ÉTAIT ICI (L'ERREUR VENAIT DE LÀ) ---
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -22,7 +18,8 @@ function App() {
   // Vérification automatique au démarrage
   useEffect(() => {
     if (token) {
-      fetch("${process.env.REACT_APP_API_URL}/verify-token", {
+      // Correction de la syntaxe de l'URL avec des backticks `` pour le template literal
+      fetch(`${process.env.REACT_APP_API_URL}/verify-token`, {
         headers: { Authorization: `Bearer ${token}` }
       })
       .then(res => {
@@ -64,7 +61,9 @@ function App() {
         <Route path="/exercices" element={<RequireAuth><Exercices user={user} /></RequireAuth>} />
         <Route path="/stats" element={<RequireAuth><Stats user={user} /></RequireAuth>} />
         <Route path="/methodes" element={<RequireAuth><Methode /></RequireAuth>} />
-        <Route   path="/retours"   element={user={user} ? <Feedback /> : <Navigate to="/login" />} />
+        
+        {/* CORRECTION CI-DESSOUS : Syntaxe de la condition user */}
+        <Route path="/retours" element={token ? <Feedback /> : <Navigate to="/login" />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
