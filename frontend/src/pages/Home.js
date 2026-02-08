@@ -95,31 +95,34 @@ function Home({ user }) {
   ========================= */
 
 
- const fetchRecommendation = async () => {
+const fetchRecommendation = async () => {
     setLoading(true);
     setFeedback(null);
     setUserAnswer("");
     const token = localStorage.getItem("token");
 
+    // On définit l'URL proprement (sans parenthèse parasite)
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
+
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL})/recommend-exercise`, {
+      // ✅ Correction de l'URL ici (suppression de la parenthèse après API_URL)
+      const res = await fetch(`${apiUrl}/recommend-exercise`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
       if (res.status === 401 || res.status === 403) return logout();
 
       const data = await res.json();
+      
       if (data.automatisme) {
-        // 1. On définit l'URL de base (à mettre en haut de ton fichier ou de ta fonction)
-const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
+        // On utilise la même apiUrl pour le deuxième fetch
+        const resExos = await fetch(
+          `${apiUrl}/exercices/${encodeURIComponent(data.automatisme)}`, 
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-// 2. On met à jour le fetch
-const resExos = await fetch(
-  `${apiUrl}/exercices/${encodeURIComponent(data.automatisme)}`, 
-  {
-    headers: { Authorization: `Bearer ${token}` },
-  }
-);
         if (resExos.status === 401) return logout();
         
         const exos = await resExos.json();
@@ -128,7 +131,7 @@ const resExos = await fetch(
         setVariables(generateVariables(exo));
       }
     } catch (err) {
-      console.error(err);
+      console.error("Erreur recommandation:", err);
     } finally {
       setLoading(false);
     }
