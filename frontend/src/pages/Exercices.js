@@ -4,6 +4,7 @@ import MethodeContent from "../components/MethodeContent";
 import "../styles/Exercices.css";
 import { useSearchParams, useNavigate } from "react-router-dom";
 
+const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
 /* =========================
    FONCTIONS UTILITAIRES
 ========================= */
@@ -159,12 +160,18 @@ const autoFromUrl = searchParams.get("automatisme");
     return true;
   };
 
-  useEffect(() => {
-    fetch(`${process.env.REACT_APP_API_URL}/automatismes`, {
+ useEffect(() => {
+    // On utilise la constante API_URL qui est plus sûre
+    const targetUrl = `${API_URL}/automatismes`;
+    console.log("Appel API vers :", targetUrl);
+
+    fetch(targetUrl, {
       headers: { Authorization: `Bearer ${token}` },
     })
       .then((res) => {
         if (!checkAuth(res)) return;
+        // Si la réponse n'est pas OK (ex: 404), on ne tente pas de lire le JSON
+        if (!res.ok) throw new Error(`Erreur serveur: ${res.status}`);
         return res.json();
       })
       .then((data) => {
@@ -172,7 +179,8 @@ const autoFromUrl = searchParams.get("automatisme");
           setCategories(Object.keys(data));
           setAutomatismesMap(data);
         }
-      });
+      })
+      .catch(err => console.error("Erreur chargement automatismes:", err));
   }, [token]);
 
   /* --- Gestion de la redirection via URL (?automatisme=...) --- */
@@ -213,32 +221,27 @@ useEffect(() => {
 
   /* --- Sélection automatisme --- */
   const handleAutomatismeChange = async (auto) => {
-  setSelectedAutomatisme(auto); // Crucial pour que le <select> affiche le bon nom
-  setFeedback("");
-  setUserAnswer("");
-  setIsSubmitted(false);
+    setSelectedAutomatisme(auto);
+    setFeedback("");
+    setUserAnswer("");
+    setIsSubmitted(false);
 
-  if (!auto) return;
+    if (!auto) return;
 
-// 1. Définition de l'URL de base (à placer idéalement en haut du fichier ou de la fonction)
-const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
-
-// 2. Le fetch modifié
-try {
-  const res = await fetch(
-    `${apiUrl}/exercices/${encodeURIComponent(auto)}`,
-    { headers: { Authorization: `Bearer ${token}` } }
-  );
-  // ... reste du code
-    if (!res.ok) throw new Error("Erreur récupération exercices");
-    const data = await res.json();
-    setExercicesBDD(data);
-    setIndexExercice(0); // On repart du premier
-    afficherExercice(data, 0);
-  } catch (err) {
-    console.error(err);
-  }
-};
+    try {
+      const res = await fetch(
+        `${API_URL}/exercices/${encodeURIComponent(auto)}`, // <--- Utilise API_URL
+        { headers: { Authorization: `Bearer ${token}` } }
+      );
+      if (!res.ok) throw new Error("Erreur récupération exercices");
+      const data = await res.json();
+      setExercicesBDD(data);
+      setIndexExercice(0);
+      afficherExercice(data, 0);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
   /* --- Affichage exercice --- */
   const afficherExercice = (list, index) => {
@@ -292,7 +295,7 @@ try {
     }
 
     // Envoi au backend
-    await fetch(`${process.env.REACT_APP_API_URL}/save-result`, {
+    await fetch(`${API_URL}/save-result`, { // <--- Utilise API_URL
       method: "POST",
       headers: {
         "Content-Type": "application/json",
