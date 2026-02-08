@@ -17,7 +17,7 @@ function Home({ user }) {
   };
 
   /* =========================
-     FONCTIONS UTILITAIRES
+      FONCTIONS UTILITAIRES
   ========================= */
 
   const extractVariables = (text) => {
@@ -34,14 +34,12 @@ function Home({ user }) {
   };
 
   const generateVariables = (exo) => {
-    // On extrait les variables de TOUS les champs pour être sûr de ne rien oublier
     const vars = extractVariables(exo.enonce + " " + (exo.correction || "") + " " + (exo.reponse_expr || ""));
     const vals = {};
     vars.forEach((v) => {
       vals[v] = Math.floor(Math.random() * 80) + 10;
     });
 
-    // Contrainte x > y pour éviter les résultats négatifs (ex: évolutions)
     if (vals.x !== undefined && vals.y !== undefined && vals.x < vals.y) {
       [vals.x, vals.y] = [vals.y, vals.x];
     }
@@ -62,14 +60,10 @@ function Home({ user }) {
   const evaluateExpression = (expr, variables) => {
     let e = expr;
     Object.entries(variables).forEach(([v, val]) => {
-      // Remplace la variable isolée par sa valeur
       e = e.replace(new RegExp(`\\b${v}\\b`, 'g'), val);
     });
-
     try {
-      // Nettoyage pour le calcul
       e = e.replace(/\s/g, "").replace(/,/g, ".");
-      // eslint-disable-next-line no-new-func
       return Function(`return ${e}`)();
     } catch (err) {
       console.error("Erreur d'évaluation :", e, err);
@@ -91,21 +85,17 @@ function Home({ user }) {
   };
 
   /* =========================
-     ACTIONS
+      ACTIONS
   ========================= */
 
-
-const fetchRecommendation = async () => {
+  const fetchRecommendation = async () => {
     setLoading(true);
     setFeedback(null);
     setUserAnswer("");
     const token = localStorage.getItem("token");
-
-    // On définit l'URL proprement (sans parenthèse parasite)
     const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
     try {
-      // ✅ Correction de l'URL ici (suppression de la parenthèse après API_URL)
       const res = await fetch(`${apiUrl}/recommend-exercise`, {
         headers: { Authorization: `Bearer ${token}` },
       });
@@ -115,20 +105,26 @@ const fetchRecommendation = async () => {
       const data = await res.json();
       
       if (data.automatisme) {
-        // On utilise la même apiUrl pour le deuxième fetch
         const resExos = await fetch(
           `${apiUrl}/exercices/${encodeURIComponent(data.automatisme)}`, 
-          {
-            headers: { Authorization: `Bearer ${token}` },
-          }
+          { headers: { Authorization: `Bearer ${token}` } }
         );
 
         if (resExos.status === 401) return logout();
         
         const exos = await resExos.json();
         const exo = exos[Math.floor(Math.random() * exos.length)];
-        setCurrentExo(exo);
-        setVariables(generateVariables(exo));
+        
+        const generatedVars = generateVariables(exo);
+        
+        // Logique ajout pourcentage
+        let enoncePart = replaceVariables(exo.enonce, generatedVars);
+        if (exo.type_reponse === 'pourcentage') {
+          enoncePart += " *(La réponse devra être donnée en pourcentage)*";
+        }
+        
+        setCurrentExo({ ...exo, enonce_affiche: enoncePart }); 
+        setVariables(generatedVars);
       }
     } catch (err) {
       console.error("Erreur recommandation:", err);
@@ -140,9 +136,13 @@ const fetchRecommendation = async () => {
   const handleSubmit = async (e) => {
     e.preventDefault();
     const token = localStorage.getItem("token");
-    const expected = evaluateExpression(currentExo.reponse_expr, variables);
+    const rawExpected = evaluateExpression(currentExo.reponse_expr, variables);
+    
+    // Arrondi à 2 chiffres pour l'affichage
+    const expectedDisplay = Number(rawExpected).toFixed(2).replace(".", ",");
+    
     const userVal = parseUserAnswer(userAnswer);
-    const isCorrect = !isNaN(userVal) && expected !== null && Math.abs(userVal - expected) < 0.01;
+    const isCorrect = !isNaN(userVal) && rawExpected !== null && Math.abs(userVal - rawExpected) < 0.01;
 
     try {
       const res = await fetch(`${process.env.REACT_APP_API_URL}/save-result`, {
@@ -165,10 +165,10 @@ const fetchRecommendation = async () => {
 
     setFeedback({
       type: isCorrect ? "success" : "error",
-      message: isCorrect ? "Bravo ! ✅" : `Faux. La réponse était ${expected}. ❌`,
+      message: isCorrect ? "Bravo ! ✅" : `Faux. La réponse était ${expectedDisplay}. ❌`,
       correction: replaceVariables(currentExo.correction, variables)
     });
-  };
+  }; // <--- FERMETURE MANQUANTE ICI
 
   return (
     <div className="container" style={{ textAlign: "center", marginTop: "5vh" }}>
@@ -190,8 +190,8 @@ const fetchRecommendation = async () => {
           <h3 style={{ color: "#2d3436" }}>Exercice n°{currentExo.numero}</h3>
           
           <div style={{ fontSize: "1.2rem", margin: "20px 0" }}>
-            {/* CORRECTION : Utilisation du bon nom de fonction replaceVariables */}
-            <MethodeContent text={replaceVariables(currentExo.enonce, variables)} />
+            {/* ✅ Utilisation de enonce_affiche pour avoir la mention pourcentage */}
+            <MethodeContent text={currentExo.enonce_affiche} />
           </div>
 
           <form onSubmit={handleSubmit} style={{ display: "flex", gap: "10px", marginBottom: "20px" }}>

@@ -251,12 +251,19 @@ useEffect(() => {
   const vars = generateVariables(exo);
   setVariablesGen(vars);
 
-  setEnonceFinal(replaceVariables(exo.enonce, vars));
-  setCorrectionFinal("");
-  setFeedback("");
-  setUserAnswer("");
-  setIsSubmitted(false); // <--- AJOUT : On autorise à nouveau la validation
-};
+  // --- LOGIQUE AJOUTÉE ICI ---
+    let texteEnonce = replaceVariables(exo.enonce, vars);
+    if (exo.type_reponse === 'pourcentage') {
+      texteEnonce += " *(La réponse devra être donnée en pourcentage)*";
+    }
+    // ---------------------------
+
+    setEnonceFinal(texteEnonce);
+    setCorrectionFinal("");
+    setFeedback("");
+    setUserAnswer("");
+    setIsSubmitted(false);
+  };
 
   /* --- Changement exercice --- */
   const selectExercice = (i) => {
@@ -275,7 +282,9 @@ useEffect(() => {
   }
 
   try {
-    const expected = evaluateExpression(exo.reponse_expr, variablesGen);
+    const rawExpected = evaluateExpression(exo.reponse_expr, variablesGen);
+    // On arrondit à 2 chiffres après la virgule pour l'affichage
+    const expected = Math.round(rawExpected * 100) / 100;
     const userVal = parseUserAnswer(userAnswer);
 
     if (isNaN(userVal)) {
@@ -291,7 +300,10 @@ useEffect(() => {
 
     // IMPORTANT : On génère la correction si c'est faux
     if (!correct) {
-      setCorrectionFinal(replaceVariables(exo.correction, variablesGen));
+      let texteCorr = replaceVariables(exo.correction, variablesGen);
+      // On peut aussi forcer l'affichage de la réponse attendue arrondie dans le feedback
+      setFeedback(`❌ Incorrect. La réponse attendue était environ ${expected}`);
+      setCorrectionFinal(texteCorr);
     }
 
     // Envoi au backend
