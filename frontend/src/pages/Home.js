@@ -102,7 +102,7 @@ function Home({ user }) {
     const token = localStorage.getItem("token");
 
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL})/recommend-exercise', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL})/recommend-exercise`, {
         headers: { Authorization: `Bearer ${token}` },
       });
       
@@ -142,7 +142,7 @@ const resExos = await fetch(
     const isCorrect = !isNaN(userVal) && expected !== null && Math.abs(userVal - expected) < 0.01;
 
     try {
-      const res = await fetch('${process.env.REACT_APP_API_URL}/save-result', {
+      const res = await fetch(`${process.env.REACT_APP_API_URL}/save-result`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
