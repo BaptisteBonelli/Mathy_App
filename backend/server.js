@@ -5,36 +5,16 @@ const cors = require("cors");
 const { createClient } = require("@libsql/client");
 const jwt = require("jsonwebtoken");
 
-
-
 const app = express();
 const PORT = process.env.PORT || 3001;
-const JWT_SECRET = "SECRET_KEY";
 const bcrypt = require("bcrypt");
 
-function authenticateToken(req, res, next) {
-  const authHeader = req.headers["authorization"];
-  const token = authHeader && authHeader.split(" ")[1];
+// UN SEUL SECRET POUR TOUT LE MONDE
+const JWT_SECRET = process.env.JWT_SECRET || "SECRET_KEY"; 
 
-  if (!token) {
-    return res.sendStatus(401);
-  }
-
-  jwt.verify(token, process.env.JWT_SECRET || "SECRET_KEY", (err, user) => {
-    if (err) {
-      return res.sendStatus(403);
-    }
-    req.user = user;
-    next();
-  });
-}
-
-
-app.use(cors({
-  origin: "*",
-  credentials: true
-}));
+app.use(cors({ origin: "*", credentials: true }));
 app.use(express.json());
+
 
 const db = createClient({
   url: process.env.TURSO_DATABASE_URL,
@@ -417,13 +397,6 @@ app.post("/save-result", authJWT, async (req, res) => {
   }
 });
 
-// ... (reste du code inchangé)
-
-// ===== VERIFY TOKEN (Nouveau) =====
-app.get("/verify-token", authJWT, (req, res) => {
-  // Si le middleware authJWT passe, le token est valide
-  res.json({ valid: true, user: req.user.identifiant });
-});
 
 app.listen(PORT, '0.0.0.0', () => {
   console.log(`Serveur démarré sur le port ${PORT}`);
