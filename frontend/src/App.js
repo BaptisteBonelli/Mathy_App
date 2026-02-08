@@ -7,6 +7,13 @@ import Login from "./pages/Login";
 import Register from "./pages/Register";
 import Stats from "./pages/Stats";
 import Home from "./pages/Home";
+import Feedback from "./pages/Feedback";
+
+
+<Route 
+  path="/retours" 
+  element={user ? <Feedback /> : <Navigate to="/login" />} 
+/>
 
 function App() {
   const [token, setToken] = useState(localStorage.getItem("token"));
@@ -57,6 +64,7 @@ function App() {
         <Route path="/exercices" element={<RequireAuth><Exercices user={user} /></RequireAuth>} />
         <Route path="/stats" element={<RequireAuth><Stats user={user} /></RequireAuth>} />
         <Route path="/methodes" element={<RequireAuth><Methode /></RequireAuth>} />
+        <Route   path="/retours"   element={user ? <Feedback /> : <Navigate to="/login" />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>

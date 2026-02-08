@@ -219,6 +219,28 @@ app.post("/register", async (req, res) => {
   }
 });
 
+// ===== ENVOYER UN RETOUR (PROTÉGÉ) =====
+app.post("/feedback", authJWT, async (req, res) => {
+  const { message } = req.body;
+  const userIdentifiant = req.user.identifiant;
+
+  if (!message || message.trim() === "") {
+    return res.status(400).json({ error: "Le message ne peut pas être vide." });
+  }
+
+  try {
+    await db.execute({
+      sql: "INSERT INTO Retours (utilisateur_identifiant, message) VALUES (?, ?)",
+      args: [userIdentifiant, message]
+    });
+
+    res.json({ success: true, message: "Retour envoyé avec succès !" });
+  } catch (err) {
+    console.error("Erreur insertion retour :", err);
+    res.status(500).json({ error: "Erreur lors de l'enregistrement du retour." });
+  }
+});
+
 // ===== AUTOMATISMES (PROTÉGÉ) =====
 app.get("/automatismes", authJWT, async (req, res) => {
   const categoriesMap = {

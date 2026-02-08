@@ -51,9 +51,9 @@ function Navbar({ onLogout }) {
             <span className="text">Ma progression</span>
           </Link>
 
-          <Link to="/" className={loc.pathname === "/" ? "active" : ""}>
+          <Link to="/" className={loc.pathname === "/retours" ? "active" : ""}>
             <span className="icon">👤</span>
-            <span className="text">Mon compte</span>
+            <span className="text">Feedbacks</span>
           </Link>
         </div>
 
