@@ -64,7 +64,7 @@ function App() {
         <Route path="/exercices" element={<RequireAuth><Exercices user={user} /></RequireAuth>} />
         <Route path="/stats" element={<RequireAuth><Stats user={user} /></RequireAuth>} />
         <Route path="/methodes" element={<RequireAuth><Methode /></RequireAuth>} />
-        <Route   path="/retours"   element={user ? <Feedback /> : <Navigate to="/login" />} />
+        <Route   path="/retours"   element={user={user} ? <Feedback /> : <Navigate to="/login" />} />
         
         <Route path="*" element={<Navigate to="/" replace />} />
       </Routes>
