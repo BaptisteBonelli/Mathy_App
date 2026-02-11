@@ -10,6 +10,7 @@ function Home({ user }) {
   const [variables, setVariables] = useState({});
   const [userAnswer, setUserAnswer] = useState("");
   const [feedback, setFeedback] = useState(null);
+  const [isSubmitted, setIsSubmitted] = useState(false); // Ajouté pour corriger l'erreur
 
   const logout = () => {
     localStorage.clear();
@@ -34,71 +35,44 @@ function Home({ user }) {
   };
 
   const generateVariables = (exo) => {
-  const vars = extractVariables(exo.enonce + " " + (exo.correction || "") + " " + (exo.reponse_expr || ""));
-  const values = {};
+    const vars = extractVariables(exo.enonce + " " + (exo.correction || "") + " " + (exo.reponse_expr || ""));
+    const values = {};
 
-  // 1. Génération aléatoire de base
-  vars.forEach((v) => {
-    values[v] = Math.floor(Math.random() * 80) + 10; // Entre 10 et 89
-  });
+    vars.forEach((v) => {
+      values[v] = Math.floor(Math.random() * 80) + 10;
+    });
 
-  // 2. Gestion des contraintes spécifiques par exercice
-  // On utilise l'ID ou le numéro de l'exercice pour appliquer des règles
-  
-  // Exemple : Si l'exercice mentionne une diminution (ex: exo 8), 
-  // on veut souvent que la valeur de départ (x) soit > valeur d'arrivée (y)
-  if (exo.numero === 8 || exo.enonce.includes("diminution")) {
-    if (values.x < values.y) {
-      [values.x, values.y] = [values.y, values.x];
+    if (exo.numero === 8 || (exo.enonce && exo.enonce.includes("diminution"))) {
+      if (values.x < values.y) [values.x, values.y] = [values.y, values.x];
     }
-  } 
-  // 2. Gestion des contraintes spécifiques
-  
-  // Exercice 22 : Ordre de grandeur (x entre 1 et 4)
-  if (exo.numero === 22) {
-    values.x = Math.floor(Math.random() * 4) + 1; // 1, 2, 3 ou 4
-    values.n = Math.floor(Math.random() * 10) + 1; // une puissance n entre 1 et 10
-  }
-
-  // Exercice 23 : Ordre de grandeur (x entre 6 et 9)
-  else if (exo.numero === 23) {
-    values.x = Math.floor(Math.random() * 4) + 6; // 6, 7, 8 ou 9
-    values.n = Math.floor(Math.random() * 10) + 1;
-  }
-
-  // Correction pour les puissances de 10 (évite que n soit traité comme 10 par défaut)
-  // On s'assure que n est bien défini s'il est présent dans l'énoncé
-  if (vars.includes('n') && values.n === undefined) {
+    
+    if (exo.numero === 22) {
+      values.x = Math.floor(Math.random() * 4) + 1;
       values.n = Math.floor(Math.random() * 10) + 1;
-  }
-  
-  // Exemple inverse : proportion (x joueurs parmi y)
-  // Il faut absolument que x <= y
-  else if (values.x !== undefined && values.y !== undefined) {
-    if (values.x > values.y) {
-      [values.x, values.y] = [values.y, values.x];
+    } else if (exo.numero === 23) {
+      values.x = Math.floor(Math.random() * 4) + 6;
+      values.n = Math.floor(Math.random() * 10) + 1;
     }
-  }
 
-  // 3. Cas particulier : éviter les divisions par zéro ou résultats trop simples
-  // Si x et y sont identiques, on ajoute un petit décalage
-  if (values.x === values.y) {
-    values.y += 5;
-  }
+    if (vars.includes('n') && values.n === undefined) {
+      values.n = Math.floor(Math.random() * 10) + 1;
+    }
 
-    // Force le même dénominateur pour l'exo 13
-  if (exo.numero === 13) {
-      values.z = values.x + Math.floor(Math.random() * 5); // Juste pour varier
-      // y reste le même pour les deux fractions
-  }
+    if (values.x !== undefined && values.y !== undefined && values.x > values.y) {
+       // Pour les proportions classiques
+       if (exo.numero !== 8) [values.x, values.y] = [values.y, values.x];
+    }
 
-  return values;
-};
+    if (values.x === values.y) values.y += 5;
+    if (exo.numero === 13) values.z = values.x + Math.floor(Math.random() * 5);
 
-  const replaceVariables = (text, variables) => {
+    return values;
+  };
+
+  const replaceVariables = (text, vars) => {
     if (!text) return "";
     let result = text;
-    Object.entries(variables).forEach(([v, val]) => {
+    Object.entries(vars).forEach(([v, val]) => {
       result = result
         .replace(new RegExp(`{{${v}}}`, "g"), val)
         .replace(new RegExp(`\\\\var\\(${v}\\)`, "g"), val);
@@ -106,9 +80,9 @@ function Home({ user }) {
     return result;
   };
 
-  const evaluateExpression = (expr, variables) => {
+  const evaluateExpression = (expr, vars) => {
     let e = expr;
-    Object.entries(variables).forEach(([v, val]) => {
+    Object.entries(vars).forEach(([v, val]) => {
       e = e.replace(new RegExp(`\\b${v}\\b`, 'g'), val);
     });
     try {
@@ -120,36 +94,34 @@ function Home({ user }) {
     }
   };
 
- const parseUserAnswer = (input) => {
-  if (!input) return NaN;
-  
-  // Nettoyage : remplace la virgule par un point et enlève les espaces
-  let s = input.trim().replace(",", ".").replace(/\s+/g, "");
+  const parseUserAnswer = (input) => {
+    if (!input) return NaN;
+    let s = input.trim().toLowerCase().replace(",", ".");
+    
+    if (s === "vrai" || s === "v") return "vrai";
+    if (s === "faux" || s === "f") return "faux";
 
-  // 1. Gestion des puissances (ex: 10^7)
-  if (s.includes("^")) {
-    const parts = s.split("^");
-    if (parts.length === 2) {
-      const base = parseFloat(parts[0]);
-      const expo = parseFloat(parts[1]);
-      if (!isNaN(base) && !isNaN(expo)) {
+    if (s.includes("^")) {
+      const parts = s.split("^");
+      if (parts.length === 2) {
+        const base = parseFloat(parts[0]);
+        const expo = parseFloat(parts[1]);
         return Math.pow(base, expo);
       }
     }
-  }
+    if (s.includes("/")) {
+      const [num, den] = s.split("/").map(parseFloat);
+      return den === 0 ? NaN : num / den;
+    }
+    return parseFloat(s);
+  };
 
-  // 2. Gestion des fractions (ex: 3/4)
-  if (s.includes("/")) {
-    const [numStr, denStr] = s.split("/");
-    const num = parseFloat(numStr);
-    const den = parseFloat(denStr);
-    if (isNaN(num) || isNaN(den) || den === 0) return NaN;
-    return num / den;
-  }
+  const isAnswerCorrect = (userValue, expectedValue) => {
+    if (isNaN(userValue) || isNaN(expectedValue)) return false;
+    return Math.abs(userValue - expectedValue) < 0.01 || 
+           Math.abs(userValue - expectedValue) / Math.abs(expectedValue) < 0.01;
+  };
 
-  // 3. Gestion des nombres classiques
-  return parseFloat(s);
-};
   /* =========================
       ACTIONS
   ========================= */
@@ -158,6 +130,7 @@ function Home({ user }) {
     setLoading(true);
     setFeedback(null);
     setUserAnswer("");
+    setIsSubmitted(false);
     const token = localStorage.getItem("token");
     const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
@@ -165,25 +138,18 @@ function Home({ user }) {
       const res = await fetch(`${apiUrl}/recommend-exercise`, {
         headers: { Authorization: `Bearer ${token}` },
       });
-      
       if (res.status === 401 || res.status === 403) return logout();
 
       const data = await res.json();
-      
       if (data.automatisme) {
         const resExos = await fetch(
           `${apiUrl}/exercices/${encodeURIComponent(data.automatisme)}`, 
           { headers: { Authorization: `Bearer ${token}` } }
         );
-
-        if (resExos.status === 401) return logout();
-        
         const exos = await resExos.json();
         const exo = exos[Math.floor(Math.random() * exos.length)];
-        
         const generatedVars = generateVariables(exo);
         
-        // Logique ajout pourcentage
         let enoncePart = replaceVariables(exo.enonce, generatedVars);
         if (exo.type_reponse === 'pourcentage') {
           enoncePart += " *(La réponse devra être donnée en pourcentage)*";
@@ -199,84 +165,55 @@ function Home({ user }) {
     }
   };
 
-  /* --- Validation réponse --- */
-  const handleSubmit = async () => {
-    if (isSubmitted) return;
+  const handleSubmit = async (e) => {
+    if (e) e.preventDefault(); // Empêche le rechargement de la page
+    if (isSubmitted || !currentExo) return;
 
-    const exo = exercicesBDD[indexExercice];
-    if (!exo || !exo.reponse_expr) {
-      setFeedback("❌ Correction automatique indisponible");
-      return;
-    }
+    const token = localStorage.getItem("token");
+    const apiUrl = process.env.REACT_APP_API_URL || "http://localhost:3001";
 
     try {
       let expected;
-      // userVal est déjà mis en minuscules par parseUserAnswer
       const userVal = parseUserAnswer(userAnswer);
 
-      // 1. Calcul de la réponse attendue
-      if (exo.numero === 16) {
-        // Évaluation de la condition mathématique
-        const boolResult = evaluateExpression(exo.reponse_expr, variablesGen);
-        // On stocke "vrai" en minuscules pour la comparaison
+      if (currentExo.numero === 16) {
+        const boolResult = evaluateExpression(currentExo.reponse_expr, variables);
         expected = boolResult ? "vrai" : "faux";
       } else {
-        // Cas général numérique
-        const rawExpected = evaluateExpression(exo.reponse_expr, variablesGen);
+        const rawExpected = evaluateExpression(currentExo.reponse_expr, variables);
         expected = Math.round(rawExpected * 100) / 100;
       }
 
-      // 2. Vérification de la validité
-      if (exo.numero !== 16 && isNaN(userVal)) {
-        setFeedback("❌ Réponse invalide (nombre ou fraction attendu)");
+      if (currentExo.numero !== 16 && isNaN(userVal)) {
+        setFeedback({ type: 'error', message: "❌ Réponse invalide (nombre ou fraction attendu)", correction: "" });
         return;
       }
 
-      // 3. Logique de correction
       setIsSubmitted(true);
-      let correct = false;
-
-      if (exo.numero === 16) {
-        // Comparaison insensible à la casse grâce au parseUserAnswer
-        correct = (userVal === expected);
-      } else {
-        correct = isAnswerCorrect(userVal, expected);
-      }
-
-      // 4. Feedback et Correction
-      if (correct) {
-        setFeedback("✅ Correct !");
-      } else {
-        let texteCorr = replaceVariables(exo.correction, variablesGen);
-        
-        // On affiche la réponse avec une majuscule pour que ce soit plus joli
-        const expectedDisplay = (exo.numero === 16) 
+      const correct = (currentExo.numero === 16) ? (userVal === expected) : isAnswerCorrect(userVal, expected);
+      
+      const expectedDisplay = (currentExo.numero === 16) 
           ? expected.charAt(0).toUpperCase() + expected.slice(1) 
           : expected;
 
-        setFeedback(`❌ Incorrect. La réponse attendue était : ${expectedDisplay}`);
-        setCorrectionFinal(texteCorr);
-      }
+      setFeedback({
+        type: correct ? 'success' : 'error',
+        message: correct ? "✅ Correct !" : `❌ Incorrect. La réponse attendue était : ${expectedDisplay}`,
+        correction: replaceVariables(currentExo.correction, variables)
+      });
 
-      // 5. Enregistrement des résultats
-      await fetch(`${API_URL}/save-result`, {
+      await fetch(`${apiUrl}/save-result`, {
         method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`,
-        },
+        headers: { "Content-Type": "application/json", Authorization: `Bearer ${token}` },
         body: JSON.stringify({
-          exercice_numero: exo.numero,
-          exercice_categorie: exo.categorie || 0,
+          exercice_numero: currentExo.numero,
+          exercice_categorie: currentExo.categorie || 0,
           correct,
           duree: 0
         }),
       });
-
-    } catch (e) {
-      console.error("Erreur validation:", e);
-      setFeedback("❌ Erreur dans la correction");
-      setIsSubmitted(false);
+    } catch (err) {
+      console.error("Erreur validation:", err);
     }
   };
 
@@ -300,7 +237,6 @@ function Home({ user }) {
           <h3 style={{ color: "#2d3436" }}>Exercice n°{currentExo.numero}</h3>
           
           <div style={{ fontSize: "1.2rem", margin: "20px 0" }}>
-            {/* ✅ Utilisation de enonce_affiche pour avoir la mention pourcentage */}
             <MethodeContent text={currentExo.enonce_affiche} />
           </div>
 
@@ -311,14 +247,13 @@ function Home({ user }) {
               onChange={(e) => setUserAnswer(e.target.value)}
               placeholder="Ta réponse..."
               style={{ padding: "10px", borderRadius: "8px", border: "1px solid #ccc", flex: 1 }}
-              disabled={feedback !== null}
+              disabled={isSubmitted}
             />
-            <button type="submit" className="categorie-card" style={{ margin: 0 }} disabled={feedback !== null}>
+            <button type="submit" className="categorie-card" style={{ margin: 0 }} disabled={isSubmitted}>
               Valider
             </button>
           </form>
 
-          {/* Section Feedback & Bouton Méthode */}
           {feedback && (
             <div style={{
               padding: "15px",
@@ -333,7 +268,6 @@ function Home({ user }) {
                 <MethodeContent text={feedback.correction} />
               </div>
 
-              {/* Bouton vers la méthode si erreur */}
               {feedback.type === 'error' && (
                 <button
                   className="method-link-btn"
@@ -347,16 +281,15 @@ function Home({ user }) {
               )}
             </div>
           )}
-        </div> /* Fin de exo-card */
+        </div>
       )}
 
-      {/* Boutons de navigation du bas */}
       <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
         <button onClick={() => navigate("/exercices")} className="categorie-card">📚 Parcourir les exercices</button>
         <button onClick={() => navigate("/methodes")} className="categorie-card">📖 Fiches méthodes</button>
         <button onClick={() => navigate("/retours")} className="categorie-card" style={{ backgroundColor: "#fab1a0" }}>💌 Signaler une erreur </button>
       </div>
-    </div> /* Fin de container */
+    </div>
   );
 }
 
