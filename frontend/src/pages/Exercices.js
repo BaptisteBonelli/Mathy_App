@@ -327,13 +327,13 @@ useEffect(() => {
     setIsSubmitted(false); // On débloque en cas d'erreur technique
   }
 
-  /* --- Regénérer l'exercice actuel avec de nouvelles valeurs --- */
+};
+/* --- Regénérer l'exercice actuel avec de nouvelles valeurs --- */
   const handleRegenerate = () => {
     // On appelle afficherExercice avec la liste actuelle et l'index actuel
     // Cela va relancer generateVariables(exo) et créer un nouvel énoncé
     afficherExercice(exercicesBDD, indexExercice);
   };
-};
   return (
     <div className="exercices-page">
       <h2 className="main-title">📘 Exercices</h2>
