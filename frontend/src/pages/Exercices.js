@@ -341,8 +341,8 @@ useEffect(() => {
   /* --- Validation réponse --- */
   /* --- Validation réponse --- */
   /* --- Validation réponse --- */
+  /* --- Validation réponse --- */
   const handleSubmit = async () => {
-    // 1. Sécurité : Empêcher les doubles clics
     if (isSubmitted) return;
 
     const exo = exercicesBDD[indexExercice];
@@ -353,49 +353,54 @@ useEffect(() => {
 
     try {
       let expected;
+      // userVal est déjà mis en minuscules par parseUserAnswer
       const userVal = parseUserAnswer(userAnswer);
 
-      // 2. Calcul de la réponse attendue selon le type d'exercice
+      // 1. Calcul de la réponse attendue
       if (exo.numero === 16) {
-        // Logique spécifique pour l'exercice de comparaison (Vrai/Faux)
+        // Évaluation de la condition mathématique
         const boolResult = evaluateExpression(exo.reponse_expr, variablesGen);
+        // On stocke "vrai" en minuscules pour la comparaison
         expected = boolResult ? "vrai" : "faux";
       } else {
-        // Logique générale pour les calculs numériques (arrondi à 2 décimales)
+        // Cas général numérique
         const rawExpected = evaluateExpression(exo.reponse_expr, variablesGen);
         expected = Math.round(rawExpected * 100) / 100;
       }
 
-      // 3. Vérification de la validité de la saisie utilisateur
-      // On ne bloque par le NaN si c'est l'exo 16 (car "vrai" est NaN pour JS)
+      // 2. Vérification de la validité
       if (exo.numero !== 16 && isNaN(userVal)) {
         setFeedback("❌ Réponse invalide (nombre ou fraction attendu)");
         return;
       }
 
-      // 4. Détermination de la réussite
+      // 3. Logique de correction
       setIsSubmitted(true);
       let correct = false;
 
       if (exo.numero === 16) {
-        // Comparaison stricte de chaînes de caractères ("vrai" === "vrai")
+        // Comparaison insensible à la casse grâce au parseUserAnswer
         correct = (userVal === expected);
       } else {
-        // Comparaison numérique avec marge d'erreur (0.01)
         correct = isAnswerCorrect(userVal, expected);
       }
 
-      // 5. Gestion du Feedback visuel
+      // 4. Feedback et Correction
       if (correct) {
         setFeedback("✅ Correct !");
       } else {
         let texteCorr = replaceVariables(exo.correction, variablesGen);
-        // On affiche la correction et on prépare le texte détaillé
-        setFeedback(`❌ Incorrect. La réponse attendue était : ${expected}`);
+        
+        // On affiche la réponse avec une majuscule pour que ce soit plus joli
+        const expectedDisplay = (exo.numero === 16) 
+          ? expected.charAt(0).toUpperCase() + expected.slice(1) 
+          : expected;
+
+        setFeedback(`❌ Incorrect. La réponse attendue était : ${expectedDisplay}`);
         setCorrectionFinal(texteCorr);
       }
 
-      // 6. Envoi du résultat au serveur pour les statistiques
+      // 5. Enregistrement des résultats
       await fetch(`${API_URL}/save-result`, {
         method: "POST",
         headers: {
@@ -406,12 +411,12 @@ useEffect(() => {
           exercice_numero: exo.numero,
           exercice_categorie: exo.categorie || 0,
           correct,
-          duree: 0 // Tu pourras ajouter un timer plus tard si besoin
+          duree: 0
         }),
       });
 
     } catch (e) {
-      console.error("Erreur lors de la validation :", e);
+      console.error("Erreur validation:", e);
       setFeedback("❌ Erreur dans la correction");
       setIsSubmitted(false);
     }

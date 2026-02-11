@@ -199,42 +199,86 @@ function Home({ user }) {
     }
   };
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    const token = localStorage.getItem("token");
-    const rawExpected = evaluateExpression(currentExo.reponse_expr, variables);
-    
-    // Arrondi à 2 chiffres pour l'affichage
-    const expectedDisplay = Number(rawExpected).toFixed(2).replace(".", ",");
-    
-    const userVal = parseUserAnswer(userAnswer);
-    const isCorrect = !isNaN(userVal) && rawExpected !== null && Math.abs(userVal - rawExpected) < 0.01;
+  /* --- Validation réponse --- */
+  const handleSubmit = async () => {
+    if (isSubmitted) return;
+
+    const exo = exercicesBDD[indexExercice];
+    if (!exo || !exo.reponse_expr) {
+      setFeedback("❌ Correction automatique indisponible");
+      return;
+    }
 
     try {
-      const res = await fetch(`${process.env.REACT_APP_API_URL}/save-result`, {
+      let expected;
+      // userVal est déjà mis en minuscules par parseUserAnswer
+      const userVal = parseUserAnswer(userAnswer);
+
+      // 1. Calcul de la réponse attendue
+      if (exo.numero === 16) {
+        // Évaluation de la condition mathématique
+        const boolResult = evaluateExpression(exo.reponse_expr, variablesGen);
+        // On stocke "vrai" en minuscules pour la comparaison
+        expected = boolResult ? "vrai" : "faux";
+      } else {
+        // Cas général numérique
+        const rawExpected = evaluateExpression(exo.reponse_expr, variablesGen);
+        expected = Math.round(rawExpected * 100) / 100;
+      }
+
+      // 2. Vérification de la validité
+      if (exo.numero !== 16 && isNaN(userVal)) {
+        setFeedback("❌ Réponse invalide (nombre ou fraction attendu)");
+        return;
+      }
+
+      // 3. Logique de correction
+      setIsSubmitted(true);
+      let correct = false;
+
+      if (exo.numero === 16) {
+        // Comparaison insensible à la casse grâce au parseUserAnswer
+        correct = (userVal === expected);
+      } else {
+        correct = isAnswerCorrect(userVal, expected);
+      }
+
+      // 4. Feedback et Correction
+      if (correct) {
+        setFeedback("✅ Correct !");
+      } else {
+        let texteCorr = replaceVariables(exo.correction, variablesGen);
+        
+        // On affiche la réponse avec une majuscule pour que ce soit plus joli
+        const expectedDisplay = (exo.numero === 16) 
+          ? expected.charAt(0).toUpperCase() + expected.slice(1) 
+          : expected;
+
+        setFeedback(`❌ Incorrect. La réponse attendue était : ${expectedDisplay}`);
+        setCorrectionFinal(texteCorr);
+      }
+
+      // 5. Enregistrement des résultats
+      await fetch(`${API_URL}/save-result`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
-          Authorization: `Bearer ${token}`
+          Authorization: `Bearer ${token}`,
         },
         body: JSON.stringify({
-          exercice_numero: currentExo.numero,
-          exercice_categorie: currentExo.categorie,
-          correct: isCorrect,
+          exercice_numero: exo.numero,
+          exercice_categorie: exo.categorie || 0,
+          correct,
           duree: 0
         }),
       });
-      if (res.status === 401) return logout();
-    } catch (err) {
-      console.error(err);
-    }
 
-    setFeedback({
-      type: isCorrect ? "success" : "error",
-      message: isCorrect ? "Bravo ! ✅" : `Faux. La réponse était ${expectedDisplay}. ❌`,
-      correction: replaceVariables(currentExo.correction, variables)
-    });
-  }; // <--- FERMETURE MANQUANTE ICI
+    } catch (e) {
+      console.error("Erreur validation:", e);
+      setFeedback("❌ Erreur dans la correction");
+      setIsSubmitted(false);
+    }
+  };
 
   return (
     <div className="container" style={{ textAlign: "center", marginTop: "5vh" }}>
