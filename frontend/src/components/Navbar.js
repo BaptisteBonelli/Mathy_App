@@ -41,7 +41,7 @@ function Navbar({ onLogout }) {
             <span className="text">Exercices</span>
           </Link>
 
-          <Link to="/flashcards" className={loc.pathname === "/flashcards" ? "active" : ""}>
+          <Link to="/exam" className={loc.pathname === "/exam" ? "active" : ""}>
             <span className="icon">⚡</span>
             <span className="text">Examens Blancs</span>
           </Link>

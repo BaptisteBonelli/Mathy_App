@@ -8,6 +8,7 @@ import Register from "./pages/Register";
 import Stats from "./pages/Stats";
 import Home from "./pages/Home";
 import Feedback from "./pages/Feedback";
+import Exam from "./pages/Exam";
 
 // --- SUPPRESSION DU BLOC QUI ÉTAIT ICI (L'ERREUR VENAIT DE LÀ) ---
 
@@ -61,6 +62,7 @@ function App() {
         <Route path="/exercices" element={<RequireAuth><Exercices user={user} /></RequireAuth>} />
         <Route path="/stats" element={<RequireAuth><Stats user={user} /></RequireAuth>} />
         <Route path="/methodes" element={<RequireAuth><Methode /></RequireAuth>} />
+        <Route path="/exam" element={<RequireAuth><Exam /></RequireAuth>} />        
         
         {/* CORRECTION CI-DESSOUS : Syntaxe de la condition user */}
         <Route path="/retours" element={token ? <Feedback /> : <Navigate to="/login" />} />

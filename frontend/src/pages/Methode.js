@@ -202,9 +202,26 @@ ${m.exemple}
 
      
       
-      {/* Bouton de redirection vers les exercices */}
+      Pour ajouter le bouton "Signaler une erreur" dans la page Methode, nous allons suivre la même logique que pour la page Exercices. Le bouton s'affichera dès qu'une méthode est sélectionnée et affichée.
+
+Voici le code modifié de votre composant. J'ai ajouté le bouton juste à côté (ou au-dessus) du bouton "S'entraîner".
+
+Modifications dans Methode.js
+JavaScript
+// ... (reste de votre code inchangé jusqu'au bas du return)
+
+      {/* Bouton de redirection vers les exercices ET Signalement */}
       {selectedMethode && contenu && !contenu.includes("❌") && (
-        <div style={{ marginTop: "2rem", textAlign: "center", paddingBottom: "2rem" }}>
+        <div style={{ 
+          marginTop: "2rem", 
+          textAlign: "center", 
+          paddingBottom: "2rem", 
+          display: "flex", 
+          flexDirection: "column", 
+          alignItems: "center", 
+          gap: "10px" 
+        }}>
+          
           <button
             className="method-link-btn"
             onClick={() =>
@@ -213,8 +230,29 @@ ${m.exemple}
           >
             ✏️ S'entraîner sur cet automatisme
           </button>
+
+          <button 
+            onClick={() => {
+              // On envoie vers la page retours avec un sujet pré-rempli
+              navigate(`/retours?sujet=${encodeURIComponent(`Erreur sur la méthode : ${selectedMethode} (Méthode ${indexMethode + 1})`)}`);
+            }}
+            className="report-btn"
+            style={{ 
+              padding: "10px 20px", 
+              fontSize: "0.9rem", 
+              backgroundColor: "#fab1a0", 
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              color: "#2d3436",
+              fontWeight: "bold",
+              width: "fit-content"
+            }}
+          >
+            ⚠️ Signaler une erreur dans cette méthode
+          </button>
+          
         </div>
-        
       )}
     </div>
   );
