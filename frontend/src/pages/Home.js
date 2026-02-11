@@ -308,7 +308,7 @@ function Home({ user }) {
 
       {/* Boutons de navigation du bas */}
       <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-        <button onClick={() => navigate("/exercices")} className="categorie-card">📚 Parcourir tout</button>
+        <button onClick={() => navigate("/exercices")} className="categorie-card">📚 Parcourir les exercices</button>
         <button onClick={() => navigate("/methodes")} className="categorie-card">📖 Fiches méthodes</button>
         <button onClick={() => navigate("/retours")} className="categorie-card" style={{ backgroundColor: "#fab1a0" }}>💌 Signaler une erreur </button>
       </div>
