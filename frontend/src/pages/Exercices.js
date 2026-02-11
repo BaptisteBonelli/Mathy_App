@@ -44,24 +44,7 @@ const generateVariables = (exo) => {
   // on veut souvent que la valeur de départ (x) soit > valeur d'arrivée (y)
   
 
-  if (exo.numero === 1 || exo.enonce.includes("diminution")) {
-    if (values.x < values.y) {
-      [values.x, values.y] = [values.y, values.x];
-    }
-  } 
-  // 2. Gestion des contraintes spécifiques
   
-  // Exercice 22 : Ordre de grandeur (x entre 1 et 4)
-  if (exo.numero === 22) {
-    values.x = Math.floor(Math.random() * 4) + 1; // 1, 2, 3 ou 4
-    values.n = Math.floor(Math.random() * 10) + 1; // une puissance n entre 1 et 10
-  }
-
-  // Exercice 23 : Ordre de grandeur (x entre 6 et 9)
-  else if (exo.numero === 23) {
-    values.x = Math.floor(Math.random() * 4) + 6; // 6, 7, 8 ou 9
-    values.n = Math.floor(Math.random() * 10) + 1;
-  }
 
   // Correction pour les puissances de 10 (évite que n soit traité comme 10 par défaut)
   // On s'assure que n est bien défini s'il est présent dans l'énoncé
@@ -114,6 +97,24 @@ const generateVariables = (exo) => {
       [values.x, values.y] = [values.y, values.x];
     }
   } 
+  if (exo.numero === 1 || exo.enonce.includes("diminution")) {
+    if (values.x < values.y) {
+      [values.x, values.y] = [values.y, values.x];
+    }
+  } 
+  // 2. Gestion des contraintes spécifiques
+  
+  // Exercice 22 : Ordre de grandeur (x entre 1 et 4)
+  if (exo.numero === 22) {
+    values.x = Math.floor(Math.random() * 4) + 1; // 1, 2, 3 ou 4
+    values.n = Math.floor(Math.random() * 10) + 1; // une puissance n entre 1 et 10
+  }
+
+  // Exercice 23 : Ordre de grandeur (x entre 6 et 9)
+  else if (exo.numero === 23) {
+    values.x = Math.floor(Math.random() * 4) + 6; // 6, 7, 8 ou 9
+    values.n = Math.floor(Math.random() * 10) + 1;
+  }
 
   return values;
 };
