@@ -219,7 +219,7 @@ function Home({ user }) {
             }}>
               <p style={{ fontWeight: "bold", margin: 0 }}>{feedback.message}</p>
               <div style={{ marginTop: "10px", fontSize: "0.95rem", fontStyle: "italic" }}>
-                <strong>Explication :</strong>
+                <strong>Correction :</strong>
                 <MethodeContent text={feedback.correction} />
               </div>
 
@@ -244,7 +244,7 @@ function Home({ user }) {
       <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
         <button onClick={() => navigate("/exercices")} className="categorie-card">📚 Parcourir tout</button>
         <button onClick={() => navigate("/methodes")} className="categorie-card">📖 Fiches méthodes</button>
-        <button onClick={() => navigate("/retours")} className="categorie-card" style={{ backgroundColor: "#fab1a0" }}>💌 Avis</button>
+        <button onClick={() => navigate("/retours")} className="categorie-card" style={{ backgroundColor: "#fab1a0" }}>💌 Signaler une erreur </button>
       </div>
     </div> /* Fin de container */
   );

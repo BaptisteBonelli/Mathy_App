@@ -408,9 +408,9 @@ useEffect(() => {
         </div>
       )}
 
-      {/* BOUTON REGENERER (S'affiche dès que l'exercice est chargé) */}
+      {/* Boutons d'action sous l'exercice */}
       {enonceFinal && (
-        <div style={{ textAlign: "center", marginTop: "1rem" }}>
+        <div style={{ display: "flex", justifyContent: "center", gap: "10px", marginTop: "1rem" }}>
           <button 
             onClick={handleRegenerate} 
             className="refresh-btn"
@@ -418,10 +418,32 @@ useEffect(() => {
           >
             🔄 Nouvel énoncé
           </button>
+
+          <button 
+            onClick={() => {
+              const exo = exercicesBDD[indexExercice];
+              if (exo) {
+                navigate(`/retours?sujet=${encodeURIComponent(`Erreur sur l'exercice ${exo.numero} - ${selectedAutomatisme}`)}`);
+              }
+            }}
+            className="report-btn"
+            style={{ 
+              padding: "8px 15px", 
+              fontSize: "0.9rem", 
+              backgroundColor: "#fab1a0", 
+              border: "none",
+              borderRadius: "8px",
+              cursor: "pointer",
+              color: "#2d3436"
+            }}
+          >
+            ⚠️ Signaler une erreur
+          </button>
         </div>
       )}
 
-      {feedback.startsWith("❌") && correctionFinal && (
+      {/* Correction détaillée - Correction de la condition de sécurité */}
+      {feedback && feedback.startsWith("❌") && correctionFinal && (
         <div className="correction-box">
           <h4>Correction détaillée</h4>
           <MethodeContent text={correctionFinal} />
@@ -444,3 +466,4 @@ useEffect(() => {
 }
 
 export default Exercices;
+
