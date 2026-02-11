@@ -272,66 +272,59 @@ useEffect(() => {
   };
 
   /* --- Validation réponse --- */
+  /* --- Validation réponse --- */
   const handleSubmit = async () => {
-  if (isSubmitted) return; 
+    if (isSubmitted) return;
 
-  const exo = exercicesBDD[indexExercice];
-  if (!exo || !exo.reponse_expr) {
-    setFeedback("❌ Correction automatique indisponible");
-    return;
-  }
-
-  try {
-    const rawExpected = evaluateExpression(exo.reponse_expr, variablesGen);
-    // On arrondit à 2 chiffres après la virgule pour l'affichage
-    const expected = Math.round(rawExpected * 100) / 100;
-    const userVal = parseUserAnswer(userAnswer);
-
-    if (isNaN(userVal)) {
-      setFeedback("❌ Réponse invalide (nombre ou fraction attendu)");
+    const exo = exercicesBDD[indexExercice];
+    if (!exo || !exo.reponse_expr) {
+      setFeedback("❌ Correction automatique indisponible");
       return;
     }
 
-    // On bloque le bouton dès que la saisie est valide
-    setIsSubmitted(true); 
-    
-    const correct = isAnswerCorrect(userVal, expected);
-    setFeedback(correct ? "✅ Correct !" : "❌ Incorrect");
+    try {
+      const rawExpected = evaluateExpression(exo.reponse_expr, variablesGen);
+      const expected = Math.round(rawExpected * 100) / 100;
+      const userVal = parseUserAnswer(userAnswer);
 
-    // IMPORTANT : On génère la correction si c'est faux
-    if (!correct) {
-      let texteCorr = replaceVariables(exo.correction, variablesGen);
-      // On peut aussi forcer l'affichage de la réponse attendue arrondie dans le feedback
-      setFeedback(`❌ Incorrect. La réponse attendue était environ ${expected}`);
-      setCorrectionFinal(texteCorr);
+      if (isNaN(userVal)) {
+        setFeedback("❌ Réponse invalide (nombre ou fraction attendu)");
+        return;
+      }
+
+      setIsSubmitted(true);
+      const correct = isAnswerCorrect(userVal, expected);
+      setFeedback(correct ? "✅ Correct !" : "❌ Incorrect");
+
+      if (!correct) {
+        let texteCorr = replaceVariables(exo.correction, variablesGen);
+        setFeedback(`❌ Incorrect. La réponse attendue était environ ${expected}`);
+        setCorrectionFinal(texteCorr);
+      }
+
+      await fetch(`${API_URL}/save-result`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          Authorization: `Bearer ${token}`,
+        },
+        body: JSON.stringify({
+          exercice_numero: exo.numero,
+          exercice_categorie: exo.categorie || 0,
+          correct,
+          duree: 0
+        }),
+      });
+
+    } catch (e) {
+      console.error(e);
+      setFeedback("❌ Erreur dans la correction");
+      setIsSubmitted(false);
     }
+  }; // <--- BIEN FERMER handleSubmit ICI
 
-    // Envoi au backend
-    await fetch(`${API_URL}/save-result`, { // <--- Utilise API_URL
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${token}`,
-      },
-      body: JSON.stringify({
-        exercice_numero: exo.numero,
-        exercice_categorie: exo.categorie || 0,
-        correct,
-        duree: 0 
-      }),
-    });
-
-  } catch (e) {
-    console.error(e);
-    setFeedback("❌ Erreur dans la correction");
-    setIsSubmitted(false); // On débloque en cas d'erreur technique
-  }
-
-};
-/* --- Regénérer l'exercice actuel avec de nouvelles valeurs --- */
+  /* --- Regénérer l'exercice (DÉCLARÉ À L'EXTÉRIEUR) --- */
   const handleRegenerate = () => {
-    // On appelle afficherExercice avec la liste actuelle et l'index actuel
-    // Cela va relancer generateVariables(exo) et créer un nouvel énoncé
     afficherExercice(exercicesBDD, indexExercice);
   };
   return (
