@@ -208,31 +208,45 @@ function Home({ user }) {
             </button>
           </form>
 
+          {/* Section Feedback & Bouton Méthode */}
           {feedback && (
             <div style={{
               padding: "15px",
               borderRadius: "8px",
               backgroundColor: feedback.type === 'success' ? '#dff9fb' : '#ffeaed',
-              borderLeft: `5px solid ${feedback.type === 'success' ? '#22a6b3' : '#eb4d4b'}`
+              borderLeft: `5px solid ${feedback.type === 'success' ? '#22a6b3' : '#eb4d4b'}`,
+              marginTop: "20px"
             }}>
               <p style={{ fontWeight: "bold", margin: 0 }}>{feedback.message}</p>
               <div style={{ marginTop: "10px", fontSize: "0.95rem", fontStyle: "italic" }}>
                 <strong>Explication :</strong>
                 <MethodeContent text={feedback.correction} />
               </div>
+
+              {/* Bouton vers la méthode si erreur */}
+              {feedback.type === 'error' && (
+                <button
+                  className="method-link-btn"
+                  style={{ marginTop: "15px", width: "100%" }}
+                  onClick={() =>
+                    navigate(`/methodes?automatisme=${encodeURIComponent(currentExo.automatisme)}`)
+                  }
+                >
+                  📘 Voir la méthode : {currentExo.automatisme}
+                </button>
+              )}
             </div>
           )}
-        </div>
+        </div> /* Fin de exo-card */
       )}
 
-      <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1rem" }}>
-        <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
-  <button onClick={() => navigate("/exercices")} className="categorie-card">📚 Parcourir tout</button>
-  <button onClick={() => navigate("/methodes")} className="categorie-card">📖 Fiches méthodes</button>
-  <button onClick={() => navigate("/retours")} className="categorie-card" style={{backgroundColor: "#fab1a0"}}>💌 Avis</button>
-</div>
+      {/* Boutons de navigation du bas */}
+      <div style={{ marginTop: "3rem", display: "flex", justifyContent: "center", gap: "1rem", flexWrap: "wrap" }}>
+        <button onClick={() => navigate("/exercices")} className="categorie-card">📚 Parcourir tout</button>
+        <button onClick={() => navigate("/methodes")} className="categorie-card">📖 Fiches méthodes</button>
+        <button onClick={() => navigate("/retours")} className="categorie-card" style={{ backgroundColor: "#fab1a0" }}>💌 Avis</button>
       </div>
-    </div>
+    </div> /* Fin de container */
   );
 }
 
