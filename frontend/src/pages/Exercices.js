@@ -93,6 +93,11 @@ const generateVariables = (exo) => {
       // y reste le même pour les deux fractions
   }
 
+  if (exo.numero === 2) {
+      values.y = values.x * Math.floor(Math.random() * 5); // Juste pour varier
+      // y reste le même pour les deux fractions
+  }
+
   return values;
 };
 
