@@ -42,11 +42,7 @@ const generateVariables = (exo) => {
   
   // Exemple : Si l'exercice mentionne une diminution (ex: exo 8), 
   // on veut souvent que la valeur de départ (x) soit > valeur d'arrivée (y)
-  if (exo.numero === 8 || exo.enonce.includes("diminution")) {
-    if (values.x < values.y) {
-      [values.x, values.y] = [values.y, values.x];
-    }
-  } 
+  
 
   if (exo.numero === 1 || exo.enonce.includes("diminution")) {
     if (values.x < values.y) {
@@ -101,10 +97,23 @@ const generateVariables = (exo) => {
 
   if (exo.numero === 3) {
     if (values.x === 0){values.x = 1}
+      const n = Math.floor(Math.random() * 9)*100;
+      values.y = values.x;
+      values.x = values.x*n;
+  }
+
+  if (exo.numero === 4) {
+    if (values.x === 0){values.x = 1}
       const n = Math.floor(Math.random() * 9);
       values.y = values.x;
       values.x = values.x*n;
   }
+
+  if (exo.numero === 8 || exo.enonce.includes("diminution")) {
+    if (values.x < values.y) {
+      [values.x, values.y] = [values.y, values.x];
+    }
+  } 
 
   return values;
 };
