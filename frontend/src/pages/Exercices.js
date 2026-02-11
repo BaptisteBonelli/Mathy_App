@@ -9,9 +9,7 @@ const API_URL = process.env.REACT_APP_API_URL || "http://localhost:3001";
    FONCTIONS UTILITAIRES
 ========================= */
 
-const isLatexSafe = (text) => {
-  return !text.includes("\\var(");
-};
+
 
 
 const extractVariables = (text) => {
@@ -45,6 +43,12 @@ const generateVariables = (exo) => {
   // Exemple : Si l'exercice mentionne une diminution (ex: exo 8), 
   // on veut souvent que la valeur de départ (x) soit > valeur d'arrivée (y)
   if (exo.numero === 8 || exo.enonce.includes("diminution")) {
+    if (values.x < values.y) {
+      [values.x, values.y] = [values.y, values.x];
+    }
+  } 
+
+  if (exo.numero === 1 || exo.enonce.includes("diminution")) {
     if (values.x < values.y) {
       [values.x, values.y] = [values.y, values.x];
     }
