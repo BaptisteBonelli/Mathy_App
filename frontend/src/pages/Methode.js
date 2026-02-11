@@ -115,11 +115,8 @@ const res = await fetch(
   const afficherMethode = (list, index, automatisme) => {
     const m = list[index];
     setContenu(`
-<<<<<<< Updated upstream
- ${automatisme} — Méthode ${index + 1}
-=======
+
 🟣 Méthode ${index + 1}
->>>>>>> Stashed changes
 
 ${m.contenu}
 `);
