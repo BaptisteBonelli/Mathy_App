@@ -94,8 +94,16 @@ const generateVariables = (exo) => {
   }
 
   if (exo.numero === 2) {
-      values.y = values.x * Math.floor(Math.random() * 5); // Juste pour varier
+    if (values.x === 0){values.x = 1}
+      values.y = values.x * Math.floor(Math.random() * 9); // Juste pour varier
       // y reste le même pour les deux fractions
+  }
+
+  if (exo.numero === 3) {
+    if (values.x === 0){values.x = 1}
+      n = Math.floor(Math.random() * 9);
+      values.y = values.x;
+      values.x = values.x*n;
   }
 
   return values;
