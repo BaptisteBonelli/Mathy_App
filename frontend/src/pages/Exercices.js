@@ -326,6 +326,13 @@ useEffect(() => {
     setFeedback("❌ Erreur dans la correction");
     setIsSubmitted(false); // On débloque en cas d'erreur technique
   }
+
+  /* --- Regénérer l'exercice actuel avec de nouvelles valeurs --- */
+  const handleRegenerate = () => {
+    // On appelle afficherExercice avec la liste actuelle et l'index actuel
+    // Cela va relancer generateVariables(exo) et créer un nouvel énoncé
+    afficherExercice(exercicesBDD, indexExercice);
+  };
 };
   return (
     <div className="exercices-page">
@@ -405,6 +412,19 @@ useEffect(() => {
           }`}
         >
           {feedback}
+        </div>
+      )}
+
+      {/* BOUTON REGENERER (S'affiche dès que l'exercice est chargé) */}
+      {enonceFinal && (
+        <div style={{ textAlign: "center", marginTop: "1rem" }}>
+          <button 
+            onClick={handleRegenerate} 
+            className="refresh-btn"
+            style={{ padding: "8px 15px", fontSize: "0.9rem" }}
+          >
+            🔄 Nouvel énoncé (mêmes données)
+          </button>
         </div>
       )}
 
