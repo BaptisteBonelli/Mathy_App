@@ -34,11 +34,21 @@ const generateVariables = (exo) => {
   const vars = extractVariables(exo.enonce + " " + (exo.correction || "") + " " + (exo.reponse_expr || ""));
   const values = {};
 
-  // 1. Génération par défaut
+  // 1. Génération aléatoire de base
   vars.forEach((v) => {
-    values[v] = Math.floor(Math.random() * 80) + 10;
+    values[v] = Math.floor(Math.random() * 80) + 10; // Entre 10 et 89
   });
 
+  // 2. Gestion des contraintes spécifiques par exercice
+  // On utilise l'ID ou le numéro de l'exercice pour appliquer des règles
+  
+  // Exemple : Si l'exercice mentionne une diminution (ex: exo 8), 
+  // on veut souvent que la valeur de départ (x) soit > valeur d'arrivée (y)
+  if (exo.numero === 8 || exo.enonce.includes("diminution")) {
+    if (values.x < values.y) {
+      [values.x, values.y] = [values.y, values.x];
+    }
+  } 
   // 2. Gestion des contraintes spécifiques
   
   // Exercice 22 : Ordre de grandeur (x entre 1 et 4)
@@ -58,13 +68,25 @@ const generateVariables = (exo) => {
   if (vars.includes('n') && values.n === undefined) {
       values.n = Math.floor(Math.random() * 10) + 1;
   }
+  
+  // Exemple inverse : proportion (x joueurs parmi y)
+  // Il faut absolument que x <= y
+  else if (values.x !== undefined && values.y !== undefined) {
+    if (values.x > values.y) {
+      [values.x, values.y] = [values.y, values.x];
+    }
+  }
 
-  // ... (reste de vos conditions : exo 8, exo 13, etc.)
-  if (exo.numero === 8 || exo.enonce.includes("diminution")) {
-    if (values.x < values.y) [values.x, values.y] = [values.y, values.x];
-  } 
-  else if (values.x !== undefined && values.y !== undefined && exo.numero !== 22 && exo.numero !== 23) {
-    if (values.x > values.y) [values.x, values.y] = [values.y, values.x];
+  // 3. Cas particulier : éviter les divisions par zéro ou résultats trop simples
+  // Si x et y sont identiques, on ajoute un petit décalage
+  if (values.x === values.y) {
+    values.y += 5;
+  }
+
+    // Force le même dénominateur pour l'exo 13
+  if (exo.numero === 13) {
+      values.z = values.x + Math.floor(Math.random() * 5); // Juste pour varier
+      // y reste le même pour les deux fractions
   }
 
   return values;
@@ -102,7 +124,23 @@ const evaluateExpression = (expr, variables) => {
 
 const parseUserAnswer = (input) => {
   if (!input) return NaN;
-  let s = input.trim().replace(",", ".");
+  
+  // Nettoyage : remplace la virgule par un point et enlève les espaces
+  let s = input.trim().replace(",", ".").replace(/\s+/g, "");
+
+  // 1. Gestion des puissances (ex: 10^7)
+  if (s.includes("^")) {
+    const parts = s.split("^");
+    if (parts.length === 2) {
+      const base = parseFloat(parts[0]);
+      const expo = parseFloat(parts[1]);
+      if (!isNaN(base) && !isNaN(expo)) {
+        return Math.pow(base, expo);
+      }
+    }
+  }
+
+  // 2. Gestion des fractions (ex: 3/4)
   if (s.includes("/")) {
     const [numStr, denStr] = s.split("/");
     const num = parseFloat(numStr);
@@ -110,6 +148,8 @@ const parseUserAnswer = (input) => {
     if (isNaN(num) || isNaN(den) || den === 0) return NaN;
     return num / den;
   }
+
+  // 3. Gestion des nombres classiques
   return parseFloat(s);
 };
 
