@@ -416,7 +416,7 @@ useEffect(() => {
             className="refresh-btn"
             style={{ padding: "8px 15px", fontSize: "0.9rem" }}
           >
-            🔄 Nouvel énoncé (mêmes données)
+            🔄 Nouvel énoncé
           </button>
         </div>
       )}
