@@ -113,7 +113,7 @@ const res = await fetch(
   const afficherMethode = (list, index, automatisme) => {
     const m = list[index];
     setContenu(`
-### ${automatisme} — Méthode ${index + 1}
+ ${automatisme} — Méthode ${index + 1}
 
 ${m.contenu}
 
