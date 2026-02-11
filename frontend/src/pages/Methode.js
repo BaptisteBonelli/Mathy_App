@@ -201,14 +201,7 @@ ${m.exemple}
       )}
 
      
-      
-      Pour ajouter le bouton "Signaler une erreur" dans la page Methode, nous allons suivre la même logique que pour la page Exercices. Le bouton s'affichera dès qu'une méthode est sélectionnée et affichée.
 
-Voici le code modifié de votre composant. J'ai ajouté le bouton juste à côté (ou au-dessus) du bouton "S'entraîner".
-
-Modifications dans Methode.js
-JavaScript
-// ... (reste de votre code inchangé jusqu'au bas du return)
 
       {/* Bouton de redirection vers les exercices ET Signalement */}
       {selectedMethode && contenu && !contenu.includes("❌") && (
