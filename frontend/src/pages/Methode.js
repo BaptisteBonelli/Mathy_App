@@ -34,6 +34,7 @@ function Methode() {
   const [methodes, setMethodes] = useState([]);
   const [selectedMethode, setSelectedMethode] = useState("");
   const [contenu, setContenu] = useState("");
+  const [exemple, setExemple] = useState("");
   const [searchParams] = useSearchParams();
   const autoFromUrl = searchParams.get("automatisme");
   const navigate = useNavigate();
@@ -80,6 +81,7 @@ function Methode() {
     setMethodesBDD([]);
     setIndexMethode(0);
     setContenu("");
+    setExemple("");
   };
 
   // ... (imports et constantes)
@@ -113,13 +115,18 @@ const res = await fetch(
   const afficherMethode = (list, index, automatisme) => {
     const m = list[index];
     setContenu(`
+<<<<<<< Updated upstream
  ${automatisme} — Méthode ${index + 1}
+=======
+🟣 Méthode ${index + 1}
+>>>>>>> Stashed changes
 
 ${m.contenu}
+`);
 
----
+  setExemple(`
+🟣 Exemple
 
-### Exemple
 
 ${m.exemple}
 `);
@@ -181,11 +188,23 @@ ${m.exemple}
 
       {/* Contenu */}
       {contenu && (
+        <>
         <div className="methode-contenu">
           <MethodeContent text={contenu} />
         </div>
+        
+         {/* On affiche la div exemple seulement si il y a un exemple */}
+          {exemple && (
+            <div className="methode-exemple">
+              <MethodeContent text={exemple} />
+            </div>
+          )}
+        
+        </>
       )}
 
+     
+      
       {/* Bouton de redirection vers les exercices */}
       {selectedMethode && contenu && !contenu.includes("❌") && (
         <div style={{ marginTop: "2rem", textAlign: "center", paddingBottom: "2rem" }}>
@@ -198,6 +217,7 @@ ${m.exemple}
             ✏️ S'entraîner sur cet automatisme
           </button>
         </div>
+        
       )}
     </div>
   );
