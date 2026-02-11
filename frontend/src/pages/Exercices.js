@@ -34,40 +34,37 @@ const generateVariables = (exo) => {
   const vars = extractVariables(exo.enonce + " " + (exo.correction || "") + " " + (exo.reponse_expr || ""));
   const values = {};
 
-  // 1. Génération aléatoire de base
+  // 1. Génération par défaut
   vars.forEach((v) => {
-    values[v] = Math.floor(Math.random() * 80) + 10; // Entre 10 et 89
+    values[v] = Math.floor(Math.random() * 80) + 10;
   });
 
-  // 2. Gestion des contraintes spécifiques par exercice
-  // On utilise l'ID ou le numéro de l'exercice pour appliquer des règles
+  // 2. Gestion des contraintes spécifiques
   
-  // Exemple : Si l'exercice mentionne une diminution (ex: exo 8), 
-  // on veut souvent que la valeur de départ (x) soit > valeur d'arrivée (y)
+  // Exercice 22 : Ordre de grandeur (x entre 1 et 4)
+  if (exo.numero === 22) {
+    values.x = Math.floor(Math.random() * 4) + 1; // 1, 2, 3 ou 4
+    values.n = Math.floor(Math.random() * 10) + 1; // une puissance n entre 1 et 10
+  }
+
+  // Exercice 23 : Ordre de grandeur (x entre 6 et 9)
+  else if (exo.numero === 23) {
+    values.x = Math.floor(Math.random() * 4) + 6; // 6, 7, 8 ou 9
+    values.n = Math.floor(Math.random() * 10) + 1;
+  }
+
+  // Correction pour les puissances de 10 (évite que n soit traité comme 10 par défaut)
+  // On s'assure que n est bien défini s'il est présent dans l'énoncé
+  if (vars.includes('n') && values.n === undefined) {
+      values.n = Math.floor(Math.random() * 10) + 1;
+  }
+
+  // ... (reste de vos conditions : exo 8, exo 13, etc.)
   if (exo.numero === 8 || exo.enonce.includes("diminution")) {
-    if (values.x < values.y) {
-      [values.x, values.y] = [values.y, values.x];
-    }
+    if (values.x < values.y) [values.x, values.y] = [values.y, values.x];
   } 
-  
-  // Exemple inverse : proportion (x joueurs parmi y)
-  // Il faut absolument que x <= y
-  else if (values.x !== undefined && values.y !== undefined) {
-    if (values.x > values.y) {
-      [values.x, values.y] = [values.y, values.x];
-    }
-  }
-
-  // 3. Cas particulier : éviter les divisions par zéro ou résultats trop simples
-  // Si x et y sont identiques, on ajoute un petit décalage
-  if (values.x === values.y) {
-    values.y += 5;
-  }
-
-    // Force le même dénominateur pour l'exo 13
-  if (exo.numero === 13) {
-      values.z = values.x + Math.floor(Math.random() * 5); // Juste pour varier
-      // y reste le même pour les deux fractions
+  else if (values.x !== undefined && values.y !== undefined && exo.numero !== 22 && exo.numero !== 23) {
+    if (values.x > values.y) [values.x, values.y] = [values.y, values.x];
   }
 
   return values;
